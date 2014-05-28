@@ -1,0 +1,37 @@
+﻿@model IEnumerable<Upholsterer.Models.Topic>
+<style>
+      .table li{color:  gray}
+    .table ul li {
+        list-style-type:none;
+        float:left;
+        padding:10px;
+    }
+    .table div {
+       display:inline-block
+    }
+</style>
+ <div class="table">  
+@foreach (var item in Model) {
+    <div>
+    <ul class="topic">
+        <li>
+            @Html.ActionLink(item.Title,"Detail",new{topicId=item.Id})
+        </li>
+     <li>
+          <a href="/User/Index?id=@item.UserId">@item.UserName</a>
+        </li>
+        <li>
+            @Html.DisplayFor(modelItem => item.ReplyCount)回应
+        </li>
+        <li>
+            @Html.DisplayFor(modelItem => item.LikeCount)赞
+        </li>
+        <li>
+            @Html.DisplayFor(modelItem => item.UpDataTime)
+        </li>
+
+         
+    </ul>
+        </div>
+}
+</div>
