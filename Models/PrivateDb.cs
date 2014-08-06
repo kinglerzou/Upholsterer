@@ -9,7 +9,7 @@ namespace Upholsterer.Models
     {
         private const string DbNameOrDbConnectionstring =
            
-          "Data Source=KING-PC;Initial Catalog=PrivateDB;User ID=sa;Password=zouj.;Persist Security Info=True";  
+          "Data Source=*****;Initial Catalog=PrivateDB;User ID=sa;Password=***;Persist Security Info=True";  
        
         public DbSet<BaseInfo> BaseInfos { get; set; }
         public DbSet<User> Users { get; set; }
