@@ -1,24 +1,138 @@
 ﻿@model IEnumerable<Upholsterer.ViewModel.UninComments>
 
 <style>
-    .cline{clear: both;overflow: auto;height: auto;min-height: 50px;margin-bottom: 30px;}
-    .cleft img{max-height: 60px;max-width: 60px;} .cleft{float: left;width: 10%; } .cleft>span{font-size: small;color: gray;}
-    .cright{float: left;width: 90%; }
-    .clinetitle{background-color: #e0ffff;width: 90%;} .clinetitle span{margin-right: 20px;color: #bbb;}
-    .comment{margin-top: 10px;padding-left: 10px;}
-    .icomment{}
-    .recomment{color: gray;padding: 5px;border-left: 1px solid gray}  .recomment span{margin-left: 30px;}
-    .commentbox{  }
-    .commentfoot{width: 90%;height: 20px;}
-    .commentfoot span{display: none;float: right;color: gray;font-size: xx-small;margin-right: 10px;cursor: pointer;}  .commentfoot span:hover{color: black}
-    .cline:hover .commentfoot>span{display: inline}
-    #addComment{width: 100%;}#Content{width:90%;height: 150px;font-size: small;}
-     #loading{display: none;}.errorinfo{display: none;color: #ff1493}
-    .com-reply{}.com-delete{}.report{}
-    .replyhold{background-color: #e0ffff;padding: 5px;width: 90%;display: none;height: auto;
+    .cline {
+        clear: both;
+        overflow: auto;
+        height: auto;
+        min-height: 50px;
+        margin-bottom: 30px;
+    }
+
+    .cleft img {
+        max-height: 60px;
+        max-width: 60px;
+    }
+
+    .cleft {
+        float: left;
+        width: 10%;
+    }
+
+        .cleft > span {
+            font-size: small;
+            color: gray;
+        }
+
+    .cright {
+        float: left;
+        width: 90%;
+    }
+
+    .clinetitle {
+        background-color: #e0ffff;
+        width: 90%;
+    }
+
+        .clinetitle span {
+            margin-right: 20px;
+            color: #bbb;
+        }
+
+    .comment {
+        margin-top: 10px;
+        padding-left: 10px;
+    }
+
+    .icomment {
+    }
+
+    .recomment {
         color: gray;
-    }  .replyhold span{float: right;margin-right: 10px;cursor: pointer;
-       } .replyhold a{float: right;margin-right: 50px;} .replyhold span:hover{color: red;}
+        padding: 5px;
+        border-left: 1px solid gray;
+    }
+
+        .recomment span {
+            margin-left: 30px;
+        }
+
+    .commentbox {
+    }
+
+    .commentfoot {
+        width: 90%;
+        height: 20px;
+    }
+
+        .commentfoot span {
+            display: none;
+            float: right;
+            color: gray;
+            font-size: xx-small;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+            .commentfoot span:hover {
+                color: black;
+            }
+
+    .cline:hover .commentfoot > span {
+        display: inline;
+    }
+
+    #addComment {
+        width: 100%;
+    }
+
+    #Content {
+        width: 90%;
+        height: 150px;
+        font-size: small;
+    }
+
+    #loading {
+        display: none;
+    }
+
+    .errorinfo {
+        display: none;
+        color: #ff1493;
+    }
+
+    .com-reply {
+    }
+
+    .com-delete {
+    }
+
+    .report {
+    }
+
+    .replyhold {
+        background-color: #e0ffff;
+        padding: 5px;
+        width: 90%;
+        display: none;
+        height: auto;
+        color: gray;
+    }
+
+        .replyhold span {
+            float: right;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .replyhold a {
+            float: right;
+            margin-right: 50px;
+        }
+
+        .replyhold span:hover {
+            color: red;
+        }
 </style>           
     
 <script>
@@ -46,13 +160,14 @@
                     var id = $("#tpid").val();
                     $.post("/Interactive/Coments", { topicId: id }, function (data1) {
                         $("#commnetupdate").html(data1);
+                        updateTopic("评论成功！");
+                        $("#addsub").val("评论");
                     });
                 } else {
-                    updateTopic("评论提交失败,请重试");
+                    updateTopic("评论提交失败,请不要连续提交！");
+                    $("#addsub").removeAttr("disabled");
+                    $("#addsub").val("评论");
                 }
-            }, complete: function (xhr) {
-                updateTopic("评论提交失败,请重试");
-                $("#addsub").val("加上去");
             }
         };
         $('#CommentForm').submit(function() {
@@ -172,7 +287,7 @@
     <form action="/Interactive/CreateComment" method="POST" id="CommentForm">
         <div id="addComment" >
             <textarea  id="Content" name="content"></textarea>
-            <input type="submit" id="addsub" value="加上去" class="btn btn-primary" />
+            <input type="submit" id="addsub" value="评论" class="btn btn-primary" />
             <span class="errorinfo"></span>
             <input type="hidden" id="tpid" name="TopicId" value="@ViewBag.TopicId"/>
             <input type="hidden" id="replyid" name="ReplyId" value="0"/>

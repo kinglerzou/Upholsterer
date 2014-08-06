@@ -12,7 +12,7 @@ namespace Upholsterer.Controllers
     public class BaseController : Controller
     {
         // GET: /User/
-        public readonly LoveDbRepository LoveDb = LoveDbRepository.GetIntance();
+        public readonly PrivateDbRepository PrivateDb = PrivateDbRepository.GetIntance();
         //
         // GET: /Recommend/
         private UninUser _meUninUser;
@@ -41,7 +41,7 @@ namespace Upholsterer.Controllers
                 Session["uid"] = uid;
                 Session.Timeout = 600;
              //   Logger.Debug("用户id:"+uid+"登陆了");
-                LoveDb.LoginCountAdd(uid);
+                PrivateDb.LoginCountAdd(uid);
                 _userId = uid;
                 return uid;
             }
@@ -53,7 +53,7 @@ namespace Upholsterer.Controllers
             var id = CheckValid();
             if (id != -1)
             {
-                return _meUninUser ?? (_meUninUser = LoveDb.GetUninUser(CheckValid()));
+                return _meUninUser ?? (_meUninUser = PrivateDb.GetUninUser(CheckValid()));
             }
 
             return null;
@@ -66,7 +66,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public string GetUserNameById(int id)
         {
-            return _meUninUser != null ? _meUninUser.User.UserName : LoveDb.One((User r) => r.UserId == id).UserName;
+            return _meUninUser != null ? _meUninUser.User.UserName : PrivateDb.One((User r) => r.UserId == id).UserName;
         }
 
         /// <summary>
@@ -76,14 +76,14 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         protected IEnumerable<User> GetBaseUsers(int id)
         {
-            var lz = LoveDb.One((User n) => n.UserId == id);
+            var lz = PrivateDb.One((User n) => n.UserId == id);
             var dislikelist = GetDislikeList();//过滤的名单，查找不喜欢数据表
           
             if (lz != null)
             {
                 //选出所有图片审核过的，资料审核过的人,且资料开放，没有被禁止,不包含在不喜欢的列表中的人
                 return
-                    LoveDb.UserAll()
+                    PrivateDb.UserAll()
                           .Where(n =>n.IsVerified && n.IsOpen && n.Enable == 1&&!dislikelist.Contains(n.UserId))
                           .ToList();
             }
@@ -118,14 +118,14 @@ namespace Upholsterer.Controllers
         public JsonResult GetUnReadMessageSum()
         {
             var id = CheckValid();
-            var msglist = LoveDb.MessageAll().Where(n => n.ToUserId == id&&!n.IsReaded).ToList();
+            var msglist = PrivateDb.MessageAll().Where(n => n.ToUserId == id&&!n.IsReaded).ToList();
             var ur = new UnReadMessageSum
             {
                 Praises = msglist.Count(n => n.MegType == MegType.Praise),
                 Private = msglist.Count(n => n.MegType == MegType.Private),
                 System = msglist.Count(n => n.MegType == MegType.System),
-                LoveMe = LoveDb.MyLoveAll().Count(n => n.LoverId == id && !n.IsRead ),
-                Visitor = LoveDb.VisitorAll().Count(n => n.UserId == id && !n.IsRead),
+                LoveMe = PrivateDb.MyLoveAll().Count(n => n.LoverId == id && !n.IsRead ),
+                Visitor = PrivateDb.VisitorAll().Count(n => n.UserId == id && !n.IsRead),
             };
             ur.Total = ur.LoveMe + ur.Praises + ur.Private + ur.System + ur.Visitor;
             return Json(ur);
@@ -138,8 +138,8 @@ namespace Upholsterer.Controllers
         public List<int> GetDislikeList()
         {
             var id = CheckValid();
-            var list= LoveDb.DisLoveAll().Where(n => n.UserId == id).Select(n => n.DisLoveId).ToList();
-            var listme = LoveDb.DisLoveAll().Where(n => n.DisLoveId == id).Select(n => n.UserId).ToList();
+            var list= PrivateDb.DisLoveAll().Where(n => n.UserId == id).Select(n => n.DisLoveId).ToList();
+            var listme = PrivateDb.DisLoveAll().Where(n => n.DisLoveId == id).Select(n => n.UserId).ToList();
             list.AddRange(listme);
             return list ;
         } 
@@ -153,7 +153,7 @@ namespace Upholsterer.Controllers
         {
             if (uid == null)
                 uid = CheckValid();
-            return Math.Round(LoveDb.GetPercent((int)uid), 2);// 还未加上回答问题数
+            return Math.Round(PrivateDb.GetPercent((int)uid), 2);// 还未加上回答问题数
         }
 
         public bool PartMathUser(Requirement condition, UninUser biguser)
@@ -193,118 +193,24 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public RecommendRate GetRecommendRate(int selfid, int otherid)
         {
-            var usersum = LoveDb.UserAll().Count;
+            var usersum = PrivateDb.UserAll().Count;
             //得到两个人的需求表 来计算相互符合度
-            var myre = LoveDb.One((Requirement r) => r.UserId == selfid);
-            var youre = LoveDb.One((Requirement r) => r.UserId == otherid);
-            var yourUnin = LoveDb.GetUninUser(otherid);
+            var myre = PrivateDb.One((Requirement r) => r.UserId == selfid);
+            var youre = PrivateDb.One((Requirement r) => r.UserId == otherid);
+            var yourUnin = PrivateDb.GetUninUser(otherid);
             var me = GetMyself();
             var rr = new RecommendRate
             {
                 //用户热度排名UserHotRate
-                UserHotRate = (double)(usersum - LoveDb.UserHotAllDes().FindIndex(n => n.UserId == otherid)) / usersum,
+                UserHotRate = (double)(usersum - PrivateDb.UserHotAllDes().FindIndex(n => n.UserId == otherid)) / usersum,
                 ForMeRate = TomeRate(yourUnin, myre),
                 ForOtherRate = TomeRate(me, youre),
-                LoveViwRate = GetLoveViewRate(yourUnin, me)
             };
             rr.TotalRate = (rr.UserHotRate + rr.LoveViwRate + rr.ForMeRate + rr.ForOtherRate) / 4;
 
             return rr;
         }
-        /// <summary>
-        /// 对比恋爱观
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="me"></param>
-        /// <returns></returns>
-        private double GetLoveViewRate(UninUser user, UninUser me)
-        {
-            var loveInts = GetLoveInts(user, me);
-            return (double)loveInts.Sum() / 10;
-        }
 
-         public int[] GetLoveInts(UninUser user, UninUser me)
-        {
-//工作安排
-            var loveInts = new int[10];
-            if (Workplan(user.LoveView.WorkTimePlan, me.LoveView.WorkTimePlan))
-            {
-                loveInts[0] = 1;
-            }
-            // 抽烟
-            if (user.LoveView.Smoking != null && me.LoveView.Smoking != null)
-            {
-                var ostr = user.LoveView.Smoking;
-                var istr = me.LoveView.Smoking;
-                if (ostr == "不吸烟,但也不介意" || (ostr == "不吸烟,而且反感吸烟" && (istr == "不吸烟,但也不介意" || istr == "不吸烟,而且反感吸烟"))
-                    || ((ostr == "经常偶尔吸烟" || ostr == "经常吸烟") && istr == "不吸烟,但也不介意"))
-                {
-                    loveInts[1] = 1;
-                }
-            }
-            //喝酒
-            if (user.LoveView.Drinking != null && me.LoveView.Drinking != null)
-            {
-                var ostr = user.LoveView.Drinking;
-                var istr = me.LoveView.Drinking;
-                if (ostr == "不喝酒,但也不介意" || (ostr == "不喝酒,且很反感喝酒" && (istr == "不喝酒,但也不介意" || istr == "不喝酒,且很反感喝酒"))
-                    || ((ostr == "偶尔社交需要才喝酒" || ostr == "经常喝酒") && istr == "不喝酒,但也不介意"))
-                {
-                    loveInts[2] = 1;
-                }
-            }
-            //恋爱多久结婚
-            if (user.LoveView.LoveDuration != null && me.LoveView.LoveDuration != null &&
-                user.LoveView.LoveDuration == me.LoveView.LoveDuration)
-            {
-                loveInts[3] = 1;
-            }
-            //婚后是否要小孩
-            if (user.LoveView.WantaBaby != null && me.LoveView.WantaBaby != null &&
-                user.LoveView.WantaBaby == me.LoveView.WantaBaby)
-            {
-                loveInts[4] = 1;
-            }
-            //婚后是否与父母同住
-            if (user.LoveView.ParentLiveTogether != null && me.LoveView.ParentLiveTogether != null &&
-                user.LoveView.ParentLiveTogether == me.LoveView.ParentLiveTogether)
-            {
-                loveInts[5] = 1;
-            }
-            //家务事
-            if (user.LoveView.Housework != null && me.LoveView.Housework != null &&
-                user.LoveView.Housework == me.LoveView.Housework)
-            {
-                loveInts[6] = 1;
-            }
-            //理财
-            if (user.LoveView.ManageMoney != null && me.LoveView.ManageMoney != null &&
-                user.LoveView.ManageMoney == me.LoveView.ManageMoney)
-            {
-                loveInts[7] = 1;
-            }
-            //厨艺
-            if (user.LoveView.Cooking != null && me.LoveView.Cooking != null)
-            {
-                var ostr = user.LoveView.Cooking;
-                var istr = me.LoveView.Cooking;
-                if ((ostr == "会做饭,希望对方也会" && (istr == "会做饭,对另一半没要求" || istr == "会做饭,希望对方也会"))
-                    || ostr == "会做饭,对另一半没要求" ||
-                    (ostr == "不太会,对另一半没要求" && istr != "会做饭,希望对方也会" && istr != "不太会,希望对方厨艺比我好")
-                    || (ostr == "不太会,希望对方厨艺比我好" && istr != "不太会,对另一半没要求" && istr != "不太会,希望对方厨艺比我好"))
-                {
-                    loveInts[8] = 1;
-                }
-            }
-
-            //异地
-            if (user.LoveView.Allopatry != null && me.LoveView.Allopatry != null &&
-                user.LoveView.Allopatry == me.LoveView.Allopatry)
-            {
-                loveInts[9] = 1;
-            }
-            return loveInts;
-        }
 
 
         private bool Workplan(string other, string mine)
@@ -429,10 +335,10 @@ namespace Upholsterer.Controllers
             
             if (type == 0)
             {
-                var hellos = LoveDb.HelloAll().Where(n => n.UserId == CheckValid());
+                var hellos = PrivateDb.HelloAll().Where(n => n.UserId == CheckValid());
                 return Json(hellos.Select(i => i.ToUserId).ToList());
             }
-            var pras = LoveDb.PraiseAll().Where(n => n.UserId == CheckValid() && n.StateType == (StateType)type).Select(i => i.StateId).ToList();//图片其实也是这个
+            var pras = PrivateDb.PraiseAll().Where(n => n.UserId == CheckValid() && n.StateType == (StateType)type).Select(i => i.StateId).ToList();//图片其实也是这个
             return Json(pras);
         }
 
@@ -443,7 +349,7 @@ namespace Upholsterer.Controllers
         public JsonResult GetLikeList()
         {
             var id = CheckValid();
-            var likes = LoveDb.MyLoveAll().Where(n => n.UserId == id);
+            var likes = PrivateDb.MyLoveAll().Where(n => n.UserId == id);
             return Json(likes.Select(i => i.LoverId).ToList());
         }
 
@@ -454,7 +360,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public string GetObjectSex(int id)
         {
-            var str = LoveDb.One((User w)=>w.UserId==id).Sex == "man" ? "她" : "他";
+            var str = PrivateDb.One((User w)=>w.UserId==id).Sex == "man" ? "她" : "他";
             return str;
         }
 
@@ -465,7 +371,7 @@ namespace Upholsterer.Controllers
         /// <returns>man women</returns>
         public string GetSex(int id)
         {
-            return LoveDb.One((User w) => w.UserId == id).Sex;
+            return PrivateDb.One((User w) => w.UserId == id).Sex;
         }
 
         /// <summary>
@@ -475,7 +381,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public string GetIdSex(int id)
         {
-            return LoveDb.One((User w) => w.UserId == id).Sex == "man" ? "他" : "她";
+            return PrivateDb.One((User w) => w.UserId == id).Sex == "man" ? "他" : "她";
         }
 
         /// <summary>
@@ -502,7 +408,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public string LastLoginstr(int uid)
         {
-            var time = LoveDb.LastOne((LoginLog l) => l.UserId == uid);
+            var time = PrivateDb.LastOne((LoginLog l) => l.UserId == uid);
             if (time != null)
             {
                 TimeSpan ts = DateTime.Now - time.LoginTime;

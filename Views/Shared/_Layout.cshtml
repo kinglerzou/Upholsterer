@@ -3,18 +3,18 @@
 <head>
         <meta charset="utf-8" />
         <title>@ViewBag.Title</title>
+            <script src="../../Scripts/jquery-1.8.3.js"></script>
         <script src="../../Scripts/jquery-ui-1.9.2.custom.min.js"></script>
-        <script src="../../Scripts/jquery-1.8.3.js"></script>
         <link href="../../Content/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
         <script src="../../Content/bootstrap/js/bootstrap.min.js"></script>
         <script src="@Url.Content("~/Scripts/modernizr-2.5.3.js")" type="text/javascript"></script>
         <link href="@Url.Content("~/Content/CSS/layout.css")" rel="stylesheet" type="text/css" />
 @*        <script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>*@
-        <link href="@Url.Content("~/Content/kendo/2012.2.710/kendo.common.min.css")" rel="stylesheet" type="text/css" />
-        <link href="@Url.Content("~/Content/kendo/2012.2.710/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
-        <link href="@Url.Content("~/Content/kendo/2012.2.710/kendo.silver.min.css")" rel="stylesheet" type="text/css" />
-        <script src="@Url.Content("~/Scripts/kendo/2012.2.710/kendo.all.min.js")"></script>
-        <script src="@Url.Content("~/Scripts/kendo/2012.2.710/kendo.aspnetmvc.min.js")"></script>
+        <link href="@Url.Content("~/Content/kendo/kendo.common.min.css")" rel="stylesheet" type="text/css" />
+        <link href="@Url.Content("~/Content/kendo/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
+        <link href="@Url.Content("~/Content/kendo/kendo.silver.min.css")" rel="stylesheet" type="text/css" />
+        <script src="@Url.Content("~/Scripts/kendo/kendo.all.min.js")"></script>
+        <script src="@Url.Content("~/Scripts/kendo/kendo.aspnetmvc.min.js")"></script>
         <script src="../../Content/JS/form.js"></script>
         <script src="../../Content/JS/master.js"></script>
         <!--[if lte IE 6]>
@@ -26,7 +26,7 @@
         <!--[if lte IE 6]>
          <!-- bsie js 补丁只在IE6中才执行 -->
         <script src="../../Content/bootstrap/bootstrap-ie.js"></script>
-        <![endif] -->
+        <![endif]-->
 </head>
 
 <body>
@@ -35,14 +35,14 @@
             <div style="margin-left: 15%">
                 <ul id="mianNav" class="nav">
                     <li class="active"><a href="/Home/Index"><span style="font-family: 微软雅黑; font-size: 1.5em; color: #fff0f5; text-shadow: 0 0 2px white">Upholsterer</span></a></li>
-                   <li class=""><a href="/Recommend/Index"><span>推荐</span></a></li>
+                   @*<li class=""><a href="/Recommend/Index"><span>推荐</span></a></li>*@
                      
                     <li class=""><a href="/User/Search"><span>搜索</span></a></li>
                   
                     <li class=""><a href="/State/Index"><span>动态</span></a></li>
                     <li class=""><a href="/User/Index"><span>个人主页</span></a></li>
                     @*<li class="divider-vertical"></li>*@
-                   <li class=""><a href="/Interactive/Index"><span>交流</span></a></li>
+                   <li class=""><a href="/Interactive/Index"><span>Topic</span></a></li>
                     <li id="adminli"><a href="/Admin/Index"><span>后台管理<i class="icon-edit icon-white"></i></span></a></li>
                     @*<li class="divider-vertical"></li>*@
                     <li class=""><a href="#"><span>消息<span class="msgTag" title="你有新消息">12</span>
@@ -52,7 +52,7 @@
                             <li><a href="/Message/CheckPrivateMessage">查看私信</a><span class="msgTag1"></span></li>
                             <li><a href="/User/PariseHelloView">新增"赞"</a><span class="msgTag1">11</span></li>
                           <li><a href="/Recommend/Visited">访客</a><span class="msgTag1">a</span></li> 
-@*                            <li><a href="/State/MyLoverView">新增喜欢</a><span class="msgTag1">11</span></li>*@
+@*                            <li><a href="/State/MyLoverView">新增</a><span class="msgTag1">11</span></li>*@
                             <li><a href="/Message/CheckMessageRecords">系统通知</a><span class="msgTag1"></span></li>
                             @*<li style="border-top: 1px solid #a9a9a9;">查看全部消息</li>*@
                         </ul>
@@ -187,11 +187,34 @@
     <div style="width: 100%;min-height: 480px;height: auto"> 
     @RenderBody()
         </div>
+        <div id="CarouselBox" class="modal hide fade " style="width: 50%;margin: 0;position: absolute; left: 25%"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+       <div class="carclose">&times;</div>
+        <div id="myCarousel" class="carousel slide">
+          <ol class="carousel-indicators">
+               @*   <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                  <li data-target="#myCarousel" data-slide-to="1"></li>
+                  <li data-target="#myCarousel" data-slide-to="2"></li>*@
+        </ol>
+          <div class="carousel-inner">
+                  @*<div class="item active">
+                      <img src="../../Content/backgroundimg/b1.jpg" />
+                    <div class="carousel-caption">
+                      <h4>First Thumbnail label</h4>
+                      <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    </div>
+                  </div>*@
+                  
+                </div>
+          <a class="left carousel-control" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+          <a class="right carousel-control" href="#myCarousel" data-slide="next">&rsaquo;</a>
+       </div>
+    </div>
+
 @*    <script>
         $.bootstrapIE6(el);
     </script>*@
-    <footer style="background-color: #808080;text-align: right;font-size: 15px;text-align:center;line-height:40px">
-        <a href="http://www.cnblogs.com/zoujking/" title="Upholsterer" style="margin-bottom:10px">@@ 2014 Upholsterer Inc. All rights reserved</a>
+    <footer style="text-align: right;font-size: 15px;text-align:center;line-height:40px">
+        <a href="http://www.cnblogs.com/zoujking/" title="Upholsterer" style="margin-bottom:20px">@@ 2014 Upholsterer Inc. All rights reserved</a>
     </footer>
          
 </body>

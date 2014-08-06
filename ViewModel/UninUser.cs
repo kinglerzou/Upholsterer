@@ -11,6 +11,5 @@ namespace Upholsterer.ViewModel
         public User User { get; set; }
         public BaseInfo BaseInfo { get; set; }
         public DetailInfo DetailInfo { get; set; }
-        public LoveView LoveView { get; set; }
     }
 }

@@ -38,12 +38,12 @@ namespace Upholsterer.Controllers
             }
             var id = CheckValid();
 
-            var role = LoveDb.One(n => n.UserId == id && (n.RoleType == RoleType.SysAdmin.ToString() || n.RoleType == RoleType.Admin.ToString()));
+            var role = PrivateDb.One(n => n.UserId == id && (n.RoleType == RoleType.SysAdmin.ToString() || n.RoleType == RoleType.Admin.ToString()));
             if (role != null)//是管理员就可以
             {
-                ViewBag.ImgCount = CheckedImgCount();
-                ViewBag.InfoCount = Checkinfocout();
-                var data = new AdminViewModel
+                    ViewBag.ImgCount = CheckedImgCount();
+                    ViewBag.InfoCount = Checkinfocout();
+                    var data = new AdminViewModel
                     {
                         Admin = GetAdmin(role),
                         UncheckedUsers = GetUncheckUsers(indextype)
@@ -60,7 +60,7 @@ namespace Upholsterer.Controllers
         public JsonResult IsAdmin()
         {
             var id = CheckValid();
-            return Json(LoveDb.One(
+            return Json(PrivateDb.One(
                 n =>
                     n.UserId == id &&
                     (n.RoleType == RoleType.SysAdmin.ToString() || n.RoleType == RoleType.Admin.ToString())) != null ? 1 : 0);
@@ -70,7 +70,7 @@ namespace Upholsterer.Controllers
         public ActionResult SysAdmin()
         {
             var id = CheckValid();
-            var role = LoveDb.One(n => n.UserId == id && n.RoleType == RoleType.SysAdmin.ToString());
+            var role = PrivateDb.One(n => n.UserId == id && n.RoleType == RoleType.SysAdmin.ToString());
             if (role != null) //是管理员就可以
             {
                 var adminlist = GetAllAdmins(id);
@@ -94,7 +94,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public ActionResult ForbidView()
         {
-            var users = LoveDb.UserAll().Where(n => n.Enable == 0).ToList();
+            var users = PrivateDb.UserAll().Where(n => n.Enable == 0).ToList();
             return View(users);
         }
 
@@ -106,16 +106,16 @@ namespace Upholsterer.Controllers
             {
                 case null:
                 case 0://未处理 默认是未处理
-                    reports = LoveDb.ReportAll().Where(n => n.IsDone == false).ToList();
+                    reports = PrivateDb.ReportAll().Where(n => n.IsDone == false).ToList();
                     break;
                 case 1: //已经处理
-                    reports = LoveDb.ReportAll().Where(n => n.IsDone).ToList();
+                    reports = PrivateDb.ReportAll().Where(n => n.IsDone).ToList();
                     break;
                 case 2:
-                    reports = LoveDb.ReportAll();
+                    reports = PrivateDb.ReportAll();
                     break;
                 default:
-                    reports = LoveDb.ReportAll().Where(n => n.IsDone == false).ToList();
+                    reports = PrivateDb.ReportAll().Where(n => n.IsDone == false).ToList();
                     break;
             }
 
@@ -141,7 +141,7 @@ namespace Upholsterer.Controllers
             var name = GetUserNameById(id);
 
             //重复举报判断
-            if (LoveDb.One(r => r.ReportType == GetReportType(reportType) && r.RelateId == relateId) != null)
+            if (PrivateDb.One(r => r.ReportType == GetReportType(reportType) && r.RelateId == relateId) != null)
             {
                 return Json("2");
             }
@@ -150,13 +150,13 @@ namespace Upholsterer.Controllers
             //取消喜欢关系 是多个
             if (reportedId != id && GetSex(id) != GetSex(reportedId))
             {
-                var loveone = LoveDb.MyLoveAll().Where(n => (n.UserId == id && n.LoverId == reportedId) || (n.LoverId == id && n.UserId == reportedId));
+                var loveone = PrivateDb.MyLoveAll().Where(n => (n.UserId == id && n.LoverId == reportedId) || (n.LoverId == id && n.UserId == reportedId));
                 foreach (var myLove in loveone)
                 {
-                    LoveDb.Delete<MyLove>(myLove.Id);
+                    PrivateDb.Delete<MyLove>(myLove.Id);
                 }
                 //加入黑名单
-                var dislike = LoveDb.DisLoveAll().SingleOrDefault(n => (n.UserId == id && n.DisLoveId == reportedId));
+                var dislike = PrivateDb.DisLoveAll().SingleOrDefault(n => (n.UserId == id && n.DisLoveId == reportedId));
                 if (dislike == null)
                 {
                     dislike = new DisLove
@@ -165,7 +165,7 @@ namespace Upholsterer.Controllers
                         DisLoveId = reportedId,
                         UserId = id,
                     };
-                    LoveDb.Add(dislike);
+                    PrivateDb.Add(dislike);
                 }
             }
 
@@ -185,7 +185,7 @@ namespace Upholsterer.Controllers
                     MessageType = GetMessageType(messageType)
                 };
 
-                LoveDb.Add(report);
+                PrivateDb.Add(report);
             }
 
             SystemSendMail(DefaultAdminMailAdress, "信息举报", "有举报，速度处理");
@@ -201,8 +201,8 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public ActionResult ReportUser(int userId)
         {
-            var user = LoveDb.GetUninUser(userId);
-            var reports = LoveDb.ReportAll().Where(n => n.ReportedUserId == userId).ToList();
+            var user = PrivateDb.GetUninUser(userId);
+            var reports = PrivateDb.ReportAll().Where(n => n.ReportedUserId == userId).ToList();
             var total = reports.Count();
             var undone = reports.Count(n => n.IsDone == false);
             var sreport = new List<SimpleReport>();
@@ -217,7 +217,7 @@ namespace Upholsterer.Controllers
                         sre.Content = "直接举报本人";
                         break;
                     case ReportType.Message:
-                        var c = LoveDb.One((Message m) => m.Id == report1.RelateId);
+                        var c = PrivateDb.One((Message m) => m.Id == report1.RelateId);
                         sre.Content = "私信举报:";
                         if (c != null)
                         {
@@ -230,7 +230,7 @@ namespace Upholsterer.Controllers
                         break;
                     case ReportType.Topic:
                         sre.Content = "话题举报:";
-                        var top = LoveDb.One((Topic m) => m.Id == report1.RelateId);
+                        var top = PrivateDb.One((Topic m) => m.Id == report1.RelateId);
                         if (top != null)
                         {
                             sre.Content += string.Format("<a href='/Interactive/Detail?topicId={0}'>{1}</a>", top.Id,
@@ -243,7 +243,7 @@ namespace Upholsterer.Controllers
                         break;
                     case ReportType.Comment:
                         sre.Content = "评论举报:";
-                        var com = LoveDb.One((Comment m) => m.Id == report1.RelateId);
+                        var com = PrivateDb.One((Comment m) => m.Id == report1.RelateId);
                         if (com != null)
                         {
                             sre.Content += com.Content;
@@ -282,12 +282,12 @@ namespace Upholsterer.Controllers
         public ActionResult DealReport(int reportId)
         {
             // 设置为done
-            var report = LoveDb.One((Report r) => r.Id == reportId);
+            var report = PrivateDb.One((Report r) => r.Id == reportId);
             if (report == null || report.IsDone)
             {
                 return null;
             }
-            LoveDb.DoneReport(reportId);
+            PrivateDb.DoneReport(reportId);
             //发给举报人 说信息已经处理 如果已经处理或者不存在就返回
             var id = CheckValid();
             var msg = new Message
@@ -301,7 +301,7 @@ namespace Upholsterer.Controllers
                 MegType = MegType.System,
                 StateType = StateType.None,
             };
-            LoveDb.Add(msg);
+            PrivateDb.Add(msg);
 
             //记录管理员 处理的情况
             var log = new ReportLog
@@ -311,7 +311,7 @@ namespace Upholsterer.Controllers
                 ReportId = reportId,
 
             };
-            LoveDb.Add(log);
+            PrivateDb.Add(log);
 
             return Json("1");
         }
@@ -324,9 +324,9 @@ namespace Upholsterer.Controllers
         public JsonResult ValidImgOrInfo(int userid, bool result, int type)
         {
             //写入真正的结果 是通过还是未通过  需要后台办法支持！ 这样修改无效
-            var r = LoveDb.CheckImgOrInfo(userid, result, type);
+            var r = PrivateDb.CheckImgOrInfo(userid, result, type);
             //写入管理员的操作记录, 并统计管理的操作数
-            LoveDb.AdminStatistics(CheckValid(), type);
+            PrivateDb.AdminStatistics(CheckValid(), type);
             //返回后 隐藏栏目
             Logger.Trace(GetUserNameById(CheckValid()) + "管理员验证资料，用户" + GetUserNameById(userid) + "类型" + type + "审核结果" + result);
             return Json(r);
@@ -339,12 +339,12 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public JsonResult ForbidUser(int userid)
         {
-            if (LoveDb.One((User e) => e.UserId == userid).Enable == 0)
+            if (PrivateDb.One((User e) => e.UserId == userid).Enable == 0)
             {
                 return Json(0);//已经被封禁过
             }
 
-            LoveDb.ForbidUser(userid);
+            PrivateDb.ForbidUser(userid);
             //通知此人
             var msg = new Message
             {
@@ -357,7 +357,7 @@ namespace Upholsterer.Controllers
                 MegType = MegType.System,
                 StateType = StateType.None,
             };
-            LoveDb.Add(msg);
+            PrivateDb.Add(msg);
 
             Logger.Trace(GetUserNameById(userid) + "被管理员：" + GetUserNameById(CheckValid()) + "封号");
 
@@ -371,12 +371,12 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public JsonResult UnForbidUser(int userid)
         {
-            if (LoveDb.One((User e) => e.UserId == userid).Enable == 1)
+            if (PrivateDb.One((User e) => e.UserId == userid).Enable == 1)
             {
                 return Json(0);//已经被封禁过
             }
 
-            LoveDb.UnForbidUser(userid);
+            PrivateDb.UnForbidUser(userid);
             //通知此人
             var msg = new Message
             {
@@ -389,7 +389,7 @@ namespace Upholsterer.Controllers
                 MegType = MegType.System,
                 StateType = StateType.None,
             };
-            LoveDb.Add(msg);
+            PrivateDb.Add(msg);
 
             Logger.Trace(GetUserNameById(userid) + "被管理员：" + GetUserNameById(CheckValid()) + "解封");
             return Json(1);//操作成功
@@ -412,12 +412,12 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public JsonResult AddAdmin(string username, string type)
         {
-            var user = LoveDb.One((User u) => u.UserName == username);//先判断有无这个人
+            var user = PrivateDb.One((User u) => u.UserName == username);//先判断有无这个人
             string str;
             if (user != null)
             {
                 //再判断这个人有没有加入Role
-                var o = LoveDb.One(r => r.UserId == user.UserId && r.RoleType == type);
+                var o = PrivateDb.One(r => r.UserId == user.UserId && r.RoleType == type);
                 if (o != null)
                 {
                     str = "该用户已经是" + type;
@@ -425,8 +425,8 @@ namespace Upholsterer.Controllers
                 else
                 {
                     var role = new Role(type, user.UserId);
-                    LoveDb.Add(role);
-                    var ads = LoveDb.AdminStatisticAll().SingleOrDefault(n => n.UserId == user.UserId);
+                    PrivateDb.Add(role);
+                    var ads = PrivateDb.AdminStatisticAll().SingleOrDefault(n => n.UserId == user.UserId);
 
                     if (ads == null)
                     {
@@ -440,7 +440,7 @@ namespace Upholsterer.Controllers
                             Experience = 0,
                             Gold = 0
                         };
-                        LoveDb.Add(amdst);
+                        PrivateDb.Add(amdst);
                     }
 
                     str = "ok";
@@ -457,17 +457,17 @@ namespace Upholsterer.Controllers
 
         public JsonResult DeleteAdmin(int userid, string admintype)
         {
-            var num = LoveDb.RoleAll().Count(n => n.UserId == userid);
+            var num = PrivateDb.RoleAll().Count(n => n.UserId == userid);
             if (num == 1)
             {
-                var admins = LoveDb.AdminStatisticAll().SingleOrDefault(n => n.UserId == userid);
+                var admins = PrivateDb.AdminStatisticAll().SingleOrDefault(n => n.UserId == userid);
                 if (admins != null)
                 {
-                    LoveDb.Delete<AdminStatistic>(admins.Id);
+                    PrivateDb.Delete<AdminStatistic>(admins.Id);
                 }
             }
-            var rs = LoveDb.One(r => r.UserId == userid && r.RoleType == admintype);//如果他有多重角色呢？ 对应的权限是否也要删除？
-            if (rs != null) LoveDb.Delete<Role>(rs.Id);
+            var rs = PrivateDb.One(r => r.UserId == userid && r.RoleType == admintype);//如果他有多重角色呢？ 对应的权限是否也要删除？
+            if (rs != null) PrivateDb.Delete<Role>(rs.Id);
 
             Logger.Trace("管理员：" + GetUserNameById(CheckValid()) + "删除了用户" + GetUserNameById(userid) + "的" + admintype);
             return Json("ok");
@@ -475,7 +475,7 @@ namespace Upholsterer.Controllers
 
         public Admin GetAdmin(Role role)
         {
-            var user = LoveDb.One((User n) => n.UserId == role.UserId);
+            var user = PrivateDb.One((User n) => n.UserId == role.UserId);
             return new Admin
             {
                 Role = role,
@@ -491,7 +491,7 @@ namespace Upholsterer.Controllers
         /// 检索的类型 0表示全部,1表示仅图片,2表示仅仅资料,3表示仅男生资料,4表示仅女生资料,5男生图片,6女生图片 
         public List<User> GetUncheckUsers(int type)
         {
-            List<User> db = LoveDb.UserAll();
+            List<User> db = PrivateDb.UserAll();
             switch (type)
             {
                 case 0:
@@ -533,7 +533,7 @@ namespace Upholsterer.Controllers
         public List<Admin> GetAllAdmins(int id)
         {
             // var roles = LoveDb.RoleAll().Where(n => n.UserId != id).OrderBy(n=>id).ToList();
-            var roles = LoveDb.RoleAll();
+            var roles = PrivateDb.RoleAll();
             return roles.Select(GetAdmin).ToList();//可以简化成这样！
         }
 
@@ -543,7 +543,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public JsonResult GetAllUserName()
         {
-            var users = LoveDb.UserAll();
+            var users = PrivateDb.UserAll();
             return Json(users.Select(user => user.UserName).ToList());
         }
 
@@ -553,12 +553,24 @@ namespace Upholsterer.Controllers
         #region 私有方法
         private int CheckedImgCount()
         {
-            return LoveDb.One((AdminStatistic n) => n.UserId == CheckValid()).CheckImgCount;
+            //修复返回为null的bug;
+            var CheckedImg = PrivateDb.One((AdminStatistic n) => n.UserId == CheckValid());
+            if (CheckedImg != null)
+            {
+                return CheckedImg.CheckImgCount;
+            }
+           return 0;
         }
 
         private int Checkinfocout()
         {
-            return LoveDb.One((AdminStatistic n) => n.UserId == CheckValid()).CheckInfoCount;
+            //修复返回为null的bug;
+            var Checkedinfo = PrivateDb.One((AdminStatistic n) => n.UserId == CheckValid());
+            if (Checkedinfo != null)
+            {
+                return Checkedinfo.CheckInfoCount;
+            }
+            return 0;
         }
 
 

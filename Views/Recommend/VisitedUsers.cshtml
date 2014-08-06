@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<Upholsterer.ViewModel.VisitUser>
 <style>
-    .totoal span{color: #00bfff;font-size: 2em;font-family: 楷体}
+    /*.totoal span{color: #00bfff;font-size: 2em;font-family: 楷体}*/
     .totoal{margin: 10px 0 10px 0; font-size: medium;text-indent: 10px;}
     .hold{background-color: white;padding: 25px;margin-top: 20px;}
     .vline{clear: both;min-height: 100px; overflow: auto;height: auto ;padding: 20px 10px; border-bottom: 1px gainsboro solid;}
@@ -13,7 +13,7 @@
    
 </style>
  <div class="hold"> 
-<div class="totoal">@Html.Raw("共有"+Model.Count()+"个<span>"+ViewBag.Sex+"</span>"+"访问了你，总访问量:"+ViewBag.VisitorCount)</div>
+<div class="totoal">@Html.Raw("总访问量:"+ViewBag.VisitorCount)</div>
 
 @{
     foreach (var visitUser in Model)

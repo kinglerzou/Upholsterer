@@ -11,11 +11,11 @@ namespace Upholsterer
 {
     public partial class ImgUpload : System.Web.UI.Page
     {
-        private LoveDbRepository db;
+        private PrivateDbRepository db;
         private int _userId;
         protected void Page_Load(object sender, EventArgs e)
         {
-            db = LoveDbRepository.GetInstance();
+            db = PrivateDbRepository.GetInstance();
 
         }
 

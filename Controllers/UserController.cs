@@ -61,14 +61,14 @@ namespace Upholsterer.Controllers
             }
 
             _uName = GetUserNameById((int)id);
-            var user = LoveDb.One((User n) => n.UserId == id);
+            var user = PrivateDb.One((User n) => n.UserId == id);
             ViewBag.Oid = lid;
             if (id != lid)
             {
                 ViewBag.Oid = id;
                 // 记录访问次数
                 if (!isSame)//同性不记录
-                LoveDb.VisitCount(user, LoveDb.One((User n) => n.UserId == CheckValid()));
+                PrivateDb.VisitCount(user, PrivateDb.One((User n) => n.UserId == CheckValid()));
             }
 
             //需要处理开始没有资料 为空的情况，建议User创建之后马上加入这个表 
@@ -80,10 +80,9 @@ namespace Upholsterer.Controllers
                 ImgUrl = user.ImgUrl,
                 UserName = user.UserName,
                 Enable = user.Enable,
-                BaseInfo = LoveDb.One((BaseInfo n) => n.UserId == id),
-                LoveView = LoveDb.One((LoveView n) => n.UserId == id),
-                DetailInfo = LoveDb.One((DetailInfo n) => n.UserId == id),
-                Requirement = LoveDb.One((Requirement n) => n.UserId == id),
+                BaseInfo = PrivateDb.One((BaseInfo n) => n.UserId == id),
+                DetailInfo = PrivateDb.One((DetailInfo n) => n.UserId == id),
+                Requirement = PrivateDb.One((Requirement n) => n.UserId == id),
                 LastState = GetLastState(id)
             };
 
@@ -97,7 +96,7 @@ namespace Upholsterer.Controllers
                     {
                         {"Age", agenow}
                     };
-                LoveDb.Update<User>(user.UserId, dictinary);
+                PrivateDb.Update<User>(user.UserId, dictinary);
             }
 
             return View(userinfo);
@@ -117,7 +116,7 @@ namespace Upholsterer.Controllers
             {
                 return RedirectToAction("Logon", "User");
             }
-            var require = LoveDb.One((Requirement r) => r.UserId == id);
+            var require = PrivateDb.One((Requirement r) => r.UserId == id);
             if (require != null)
             {
                 ViewBag.Requir = GetRequirStr(require);
@@ -142,16 +141,15 @@ namespace Upholsterer.Controllers
             }
             var rate = GetRecommendRate(id, userid);
             var meuin = GetMyself();
-            var other = LoveDb.GetUninUser(userid);
-            var myre = LoveDb.One((Requirement r) => r.UserId == id);
-            var youre = LoveDb.One((Requirement r) => r.UserId == userid);
+            var other = PrivateDb.GetUninUser(userid);
+            var myre = PrivateDb.One((Requirement r) => r.UserId == id);
+            var youre = PrivateDb.One((Requirement r) => r.UserId == userid);
             ViewBag.Sex = meuin.User.Sex == "man" ? "她" : "他";
 
             var comp = new CompareUsers
             {
                 Wo = meuin,
                 Ta = other,
-                LoveInts = GetLoveInts(other, meuin),
                 MyRequirement = myre,
                 OtherRequirement = youre,
                 TaInts = GetTomeInts(meuin, youre),
@@ -172,10 +170,10 @@ namespace Upholsterer.Controllers
             var pinfo = new PersonInfo
             {
                 Myself = my,
-                IloveCount = LoveDb.MyLoveAll().Count(n => n.UserId == my.User.UserId),
-                LoveMeCount = LoveDb.MyLoveAll().Count(n => n.LoverId == my.User.UserId),
+                IloveCount = PrivateDb.MyLoveAll().Count(n => n.UserId == my.User.UserId),
+                LoveMeCount = PrivateDb.MyLoveAll().Count(n => n.LoverId == my.User.UserId),
                 Persent = GetPersent(my.User.UserId),
-                Visitcount = LoveDb.VisitorAll().Where(n => n.UserId == my.User.UserId).Sum(n => n.Count),
+                Visitcount = PrivateDb.VisitorAll().Where(n => n.UserId == my.User.UserId).Sum(n => n.Count),
             };
             pinfo.Info = pinfo.Persent < 0.3 ? "还需要完善" : "还不错哦";
 
@@ -220,8 +218,8 @@ namespace Upholsterer.Controllers
                 simpleUsers.AddRange(from user1 in baseusers
                                      select new UninUser
                                      {
-                                         BaseInfo = LoveDb.One((BaseInfo b) => b.UserId == user1.UserId),
-                                         DetailInfo = LoveDb.One((DetailInfo d) => d.UserId == user1.UserId),
+                                         BaseInfo = PrivateDb.One((BaseInfo b) => b.UserId == user1.UserId),
+                                         DetailInfo = PrivateDb.One((DetailInfo d) => d.UserId == user1.UserId),
                                          User = user1
                                      }
                                          into uni
@@ -255,7 +253,7 @@ namespace Upholsterer.Controllers
                     ImgUrl = user.ImgUrl,
                     UserName = user.UserName,
                     UserId = user.UserId,
-                    City = LoveDb.One((BaseInfo b) => b.UserId == user.UserId).ResidenceCity
+                    City = PrivateDb.One((BaseInfo b) => b.UserId == user.UserId).ResidenceCity
                 }).ToList();
         }
 
@@ -438,7 +436,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public ActionResult UpLoadPhoto()
         {
-            var user = LoveDb.One((User n) => n.UserId == CheckValid());
+            var user = PrivateDb.One((User n) => n.UserId == CheckValid());
             return View(user);
         }
 
@@ -449,20 +447,20 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public ActionResult ImageBox(int userid)
         {
-            var imgs = LoveDb.IamgAll().Where(n => n.UserId == userid);
+            var imgs = PrivateDb.IamgAll().Where(n => n.UserId == userid);
             ViewBag.IsSelf =userid == CheckValid()? "Self":"Other";
             return PartialView(imgs);
         }
 
         public void DeletImg(int id)
         {
-            LoveDb.Delete<Iamgbox>(id);
+            PrivateDb.Delete<Iamgbox>(id);
             // 没有真正的删除图片。只是相册中看不见了。
         }
 
         public ActionResult StateList(int userid)
         {
-            var states = LoveDb.StateAll().Where(n => n.UserId == userid).OrderByDescending(n=>n.Id);
+            var states = PrivateDb.StateAll().Where(n => n.UserId == userid).OrderByDescending(n=>n.Id);
             ViewBag.IsSelf = userid == CheckValid() ? "Self" : "Other";
             return PartialView(states);
         }
@@ -511,7 +509,7 @@ namespace Upholsterer.Controllers
         }
 
         /// <summary>
-        /// 为什么topic 图片存不下去！
+        ///topic 图片
         /// </summary>
         /// <param name="file"></param>
         [HttpPost]
@@ -571,7 +569,7 @@ namespace Upholsterer.Controllers
             }
           
             var image = GetExtensionName(file.FileName).ToLower();
-            if (image != ".bmp" && image != ".png" && image != ".gif" && image != ".jpg" && image != ".jpeg")// 这里你自己加入其他图片格式，最好全部转化为大写再判断，我就偷懒了
+            if (image.ToUpper() != ".BMP" && image != ".png" && image != ".gif" && image != ".jpg" && image != ".jpeg")// 这里你自己加入其他图片格式
             {
                 return "格式不对";
             }
@@ -635,7 +633,7 @@ namespace Upholsterer.Controllers
                         UserId = uid,
                         VisitCount = 0,
                     };
-                    LoveDb.Add(box);
+                    PrivateDb.Add(box);
                 };
             }
             if (finallist.Count() != 0)
@@ -654,7 +652,7 @@ namespace Upholsterer.Controllers
                     StateType = StateType.Image.ToString(),
                     UserId = uid
                 };
-                LoveDb.Add(state);
+                PrivateDb.Add(state);
                 Session.Remove("Imgscr");
                 Session.Remove("ImgServerscr");
             }
@@ -693,7 +691,7 @@ namespace Upholsterer.Controllers
                 {
                     {"ImgUrl", scrshow}
                 };
-            LoveDb.Update<User>(uid, dictinary);
+            PrivateDb.Update<User>(uid, dictinary);
 
             var imgbox = new Iamgbox
             {
@@ -704,7 +702,7 @@ namespace Upholsterer.Controllers
                 Remark = "我的头像",
                 IsValid = true,
             };
-            LoveDb.Add(imgbox);
+            PrivateDb.Add(imgbox);
 
             var state = new State
             {
@@ -713,10 +711,10 @@ namespace Upholsterer.Controllers
                 Content = "我刚刚更换了头像:<br/><div class='imgtigger'><img src='" + scrshow + "' /></div>",
                 StateType = StateType.Image.ToString(),
             };
-            LoveDb.Add(state);
+            PrivateDb.Add(state);
 
 
-            // 图片消息还没有处理呢。先放在这
+       
             return 1;//成功
         }
 
@@ -740,7 +738,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public ActionResult UpdateBaseInfo(BaseInfo info)
         {
-            LoveDb.UpdateBaseInfo(CheckValid(), info);
+            PrivateDb.UpdateBaseInfo(CheckValid(), info);
             return Json(info);
         }
         /// <summary>
@@ -750,7 +748,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public ActionResult UpdateDetailInfo(DetailInfo info)
         {
-            LoveDb.UpdateDetail(CheckValid(), info);
+            PrivateDb.UpdateDetail(CheckValid(), info);
             if (info.NativeCity == "选择城市")
             {
                 info.NativeCity = "";
@@ -758,17 +756,6 @@ namespace Upholsterer.Controllers
 
             return Json(info);
         }
-        /// <summary>
-        /// 修改恋爱观
-        /// </summary>
-        /// <param name="info"></param>
-        /// <returns></returns>
-        public ActionResult UpdateLoveView(LoveView info)
-        {
-            LoveDb.UpdateLoveView(CheckValid(), info);
-            return Json(info);
-        }
-
         public ActionResult UpdateRequirement(RequirementClone info)
         {
             info.HightUl = info.HightUl == "不限" ? "0" : info.HightUl.Substring(0, 3);
@@ -797,24 +784,30 @@ namespace Upholsterer.Controllers
                     UserId = id
 
                 };
-            LoveDb.UpdateRequirement(requirement);
+            PrivateDb.UpdateRequirement(requirement);
             info.UserId = id;
             return Json(requirement);
         }
 
         /// <summary>
-        /// 发布内心告白
+        /// 发布状态
         /// </summary>
         /// <param name="content"></param>
         /// <returns>返回0 说明发布时间太快，不过3分钟</returns>
         public JsonResult SendPersonalState(string content)
         {
-            // 检查最后一条状态，不准发的太频繁。
-            var laststate = LoveDb.LastOne((State s) => s.UserId == CheckValid());
-            var min = LoveDb.DiffMinute(laststate.ActionTime, DateTime.Now);
-            if (min <= 1)
+            // 检查最后一条状态，不准发的太频繁。第一次更新状态不判断
+            var laststate = PrivateDb.LastOne((State s) => s.UserId == CheckValid());
+            if (laststate != null)
             {
-                return Json(0);
+                var min = PrivateDb.DiffMinute(laststate.ActionTime, DateTime.Now);
+
+                if (min <= 1)
+                {
+                    return Json(0);
+
+
+                }
             }
 
             var state = new State
@@ -825,7 +818,7 @@ namespace Upholsterer.Controllers
                 PraiseCount = 0,
                 StateType = StateType.Personal.ToString(),
             };
-            LoveDb.Add(state);
+            PrivateDb.Add(state);
             return Json(content);
         }
 
@@ -845,7 +838,7 @@ namespace Upholsterer.Controllers
         [HttpPost]
         public ActionResult Logon(LogOnModel model)
         {
-            var user = model.UserName.Contains("@") ? LoveDb.One(n => n.Email == model.UserName.Trim()) : LoveDb.One((User n) => n.UserName == model.UserName.Trim());
+            var user = model.UserName.Contains("@") ? PrivateDb.One(n => n.Email == model.UserName.Trim()) : PrivateDb.One((User n) => n.UserName == model.UserName.Trim());
             if (user != null)
             {
                 if (user.Enable == 0)
@@ -876,7 +869,7 @@ namespace Upholsterer.Controllers
                         }
                     }
 
-                    LoveDb.LoginCountAdd(user.UserId);
+                    PrivateDb.LoginCountAdd(user.UserId);
 
                     return Json(user.UserId);
                 }
@@ -896,7 +889,7 @@ namespace Upholsterer.Controllers
         [HttpPost]
         public ActionResult ModifyPassword(ModifyPassword modify)
         {
-            if (LoveDb.ModifyPassword(CheckValid(), modify))
+            if (PrivateDb.ModifyPassword(CheckValid(), modify))
             {
                 return Json("修改密码成功，请重新登陆！",JsonRequestBehavior.AllowGet);
             }
@@ -921,7 +914,7 @@ namespace Upholsterer.Controllers
             {
                 uidCookie.Expires = DateTime.Now.AddDays(0);
             }
-            LoveDb.Logoff(CheckValid());
+            PrivateDb.Logoff(CheckValid());
             return RedirectToAction("Index","Home");
         }
 
@@ -952,15 +945,15 @@ namespace Upholsterer.Controllers
                         Age = GetOld(model.BrithDate),
                         IsOpen = true,
                     };
-                LoveDb.Add(user);
-                var id = LoveDb.One((User u) => u.UserName == user.UserName).UserId;
-                LoveDb.Add(new BaseInfo { UserId = id });
-                LoveDb.Add(new Requirement { UserId = id, AgeLl = 18 });
-                LoveDb.Add(new DetailInfo { UserId = id });
-                LoveDb.Add(new UserHot { UserId = id, LogCount = 1, HotValue = 1 });
-                LoveDb.Add(new Search { UserId = id });
-                LoveDb.Add(new LastState { UserId = id });
-                LoveDb.Add(new InfoStatistic
+                PrivateDb.Add(user);
+                var id = PrivateDb.One((User u) => u.UserName == user.UserName).UserId;
+                PrivateDb.Add(new BaseInfo { UserId = id });
+                PrivateDb.Add(new Requirement { UserId = id, AgeLl = 18 });
+                PrivateDb.Add(new DetailInfo { UserId = id });
+                PrivateDb.Add(new UserHot { UserId = id, LogCount = 1, HotValue = 1 });
+                PrivateDb.Add(new Search { UserId = id });
+                PrivateDb.Add(new LastState { UserId = id });
+                PrivateDb.Add(new InfoStatistic
                 {
                     UserId = id,
                     BaseInfoBase = 9,
@@ -971,7 +964,6 @@ namespace Upholsterer.Controllers
                     LoveViewsReal = 0,
                     Percent = 0          // 基数按50算 24项基本资料 + 4张图片+18个问题
                 });
-                LoveDb.Add(new LoveView { UserId = id });
                 Session["uid"] = user.UserId;
                 Session.Timeout = 600;
 
@@ -991,16 +983,16 @@ namespace Upholsterer.Controllers
                 var sysMsg = new Message
                 {
                     ActionTime = DateTime.Now,
-                    Content = "欢迎来到茶道文化",
+                    Content = "欢迎来到Upholsterer",
                     FromUserId = 1,
-                    FromUserName = "茶道文化管理员",
+                    FromUserName = "Upholsterer管理员",
                     IsReaded = false,
                     MegType = MegType.System,
                     StateId = id,
                     StateType = StateType.None,
                     ToUserId = id,
                 };
-                LoveDb.Add(sysMsg);
+                PrivateDb.Add(sysMsg);
 
                 SystemSendMail(DefaultAdminMailAdress, "新人注册", "有新人注册，速度审核");
 
@@ -1045,12 +1037,12 @@ namespace Upholsterer.Controllers
         public string GetLastState(int? id)
         {
             if (id == null) id = CheckValid();
-            var state = LoveDb.LastOne((State n) => n.UserId == id&&n.StateType==StateType.Personal.ToString());
+            var state = PrivateDb.LastOne((State n) => n.UserId == id&&n.StateType==StateType.Personal.ToString());
             if (state != null && !string.IsNullOrEmpty(state.Content))
             {
                 return state.Content;
             }
-            return "让那个意中人,听到你的心声吧!";
+            return "GO!";
         }
 
         /// <summary>
@@ -1060,7 +1052,7 @@ namespace Upholsterer.Controllers
         public JsonResult GetBaseInfo()
         {
             var id = CheckValid();
-            var bs = LoveDb.One((BaseInfo n) => n.UserId == id);
+            var bs = PrivateDb.One((BaseInfo n) => n.UserId == id);
             return Json(bs);
         }
 
@@ -1071,25 +1063,16 @@ namespace Upholsterer.Controllers
         public JsonResult GetDetailInfo()
         {
             var id = CheckValid();
-            var bs = LoveDb.One((DetailInfo n) => n.UserId == id);
+            var bs = PrivateDb.One((DetailInfo n) => n.UserId == id);
             return Json(bs);
         }
 
-        /// <summary>
-        /// 获取恋爱观数据
-        /// </summary>
-        /// <returns></returns>
-        public JsonResult GetLoveView()
-        {
-            var id = CheckValid();
-            var bs = LoveDb.One((LoveView n) => n.UserId == id);
-            return Json(bs);
-        }
+
 
         public JsonResult GetRequirement()
         {
             var id = CheckValid();
-            var requirement = LoveDb.One((Requirement n) => n.UserId == id);
+            var requirement = PrivateDb.One((Requirement n) => n.UserId == id);
             return Json(requirement);
         }
 
@@ -1103,12 +1086,12 @@ namespace Upholsterer.Controllers
         public ActionResult PariseHelloView()
         {
             var userid = CheckValid();
-            var megs = LoveDb.MessageAll().Where(n => n.MegType == MegType.Praise && n.ToUserId == userid).OrderByDescending(a => a.ActionTime).ToList();
+            var megs = PrivateDb.MessageAll().Where(n => n.MegType == MegType.Praise && n.ToUserId == userid).OrderByDescending(a => a.ActionTime).ToList();
             var pariseHelloUsers = new List<PariseHelloUser>();
             foreach (var message in megs)
             {
                 string content = ""; Message message1 = message;
-                var state = LoveDb.One((State s) => s.Id == message1.StateId);
+                var state = PrivateDb.One((State s) => s.Id == message1.StateId);
                 switch (message.StateType)
                 {
                     case StateType.None:
@@ -1133,12 +1116,12 @@ namespace Upholsterer.Controllers
                 }
                 if (!message.IsReaded)
                 {
-                    LoveDb.ReadMessage<Message>(message.Id);
+                    PrivateDb.ReadMessage<Message>(message.Id);
                 }
 
                 var mm = new PariseHelloUser
                 {
-                    UninUser = LoveDb.GetUninUser(message.FromUserId),
+                    UninUser = PrivateDb.GetUninUser(message.FromUserId),
                     Message = message,
                     Content = content,
                 };
@@ -1155,7 +1138,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public JsonResult CheckUserName(string username)
         {
-            var result = !(LoveDb.UserAll().Where(n => n.UserName == username.Trim())).Any();
+            var result = !(PrivateDb.UserAll().Where(n => n.UserName == username.Trim())).Any();
             result = result && username.Length < 10;
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -1167,7 +1150,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         public JsonResult CheckMail(string email)
         {
-            var result = !(LoveDb.UserAll().Where(n => n.Email == email.Trim())).Any();
+            var result = !(PrivateDb.UserAll().Where(n => n.Email == email.Trim())).Any();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 

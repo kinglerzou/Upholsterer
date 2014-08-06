@@ -7,9 +7,8 @@
                 $(".msgTag").html(data.Total).show();
                 data.Private != 0 ? $(".msgTag1:eq(0)").html(data.Private).show() : $(".msgTag1:eq(0)").hide();
                 data.Praises != 0 ? $(".msgTag1:eq(1)").html(data.Praises).show() : $(".msgTag1:eq(1)").hide();
-                data.Visitor != 0 ? $(".msgTag1:eq(2)").html(data.Visitor).show() : $(".msgTag1:eq(2)").hide();
-                //data.LoveMe != 0 ? $(".msgTag1:eq(3)").html(data.LoveMe).show() : $(".msgTag1:eq(3)").hide();
-                data.System != 0 ? $(".msgTag1:eq(2)").html(data.System).show() : $(".msgTag1:eq(3)").hide();
+                data.Visitor != 0 ? $(".msgTag1:eq(2)").html(data.Visitor).show() : $(".msgTag1:eq(2)").hide();            
+                data.System != 0 ? $(".msgTag1:eq(3)").html(data.System).show() : $(".msgTag1:eq(3)").hide();
             } else {
                 $(".msgTag,.msgTag1").hide();
             }

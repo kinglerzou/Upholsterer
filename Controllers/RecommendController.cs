@@ -19,7 +19,7 @@ namespace Upholsterer.Controllers
             var id = CheckValid();
             if (id == -1 || Session["uid"]==null)
             {
-                return RedirectToAction("Logon", "User");//不知道有没有效果
+                return RedirectToAction("Logon", "User");
             }
             return View();
         }
@@ -30,10 +30,10 @@ namespace Upholsterer.Controllers
             var id = CheckValid();
             if (id == -1 || Session["uid"] == null)
             {
-                return RedirectToAction("Logon", "User");//不知道有没有效果
+                return RedirectToAction("Logon", "User");
             }
-            var require = LoveDb.One((Requirement r) => r.UserId == id);
-            var baseusers = GetBaseUsers(id).Where(n => PartMathUser(require, LoveDb.GetUninUser(n.UserId)));//找出所有正规的异性符合需求的。 
+            var require = PrivateDb.One((Requirement r) => r.UserId == id);
+            var baseusers = GetBaseUsers(id).Where(n => PartMathUser(require, PrivateDb.GetUninUser(n.UserId)));//找出所有正规的异性符合需求的。 
             ViewBag.Sex = GetMyself().User.Sex == "man" ? "她" : "他";
             var userlist = baseusers.Select(baseuser => GetRecommendUser(baseuser.UserId)).ToList();
             return PartialView(userlist.OrderByDescending(n => n.Rate.TotalRate));
@@ -57,21 +57,21 @@ namespace Upholsterer.Controllers
             var id = CheckValid();
             if (id == -1 || Session["uid"] == null)
             {
-                return RedirectToAction("Logon", "User");//不知道有没有效果
+                return RedirectToAction("Logon", "User");
             }
         
-            ViewBag.Sex = GetMyself().User.Sex == "man" ? "她" : "他";
+            //ViewBag.Sex = GetMyself().User.Sex == "man" ? "她" : "他";
 
-            var mylist = LoveDb.VisitorAll().Where(n => n.UserId == id).ToList();
+            var mylist = PrivateDb.VisitorAll().Where(n => n.UserId == id).ToList();
             foreach (var visitLog in mylist.Where(m=>!m.IsRead))
             {
-                LoveDb.ReadMessage<VisitLog>(visitLog.Id);
+                PrivateDb.ReadMessage<VisitLog>(visitLog.Id);
             }
             ViewBag.VisitorCount = mylist.Sum(n => n.Count);// 需要修正！
 
             var visitusrs = mylist.Select(obj => new VisitUser
             {
-                Visitor = LoveDb.GetUninUser(obj.VisitorId),
+                Visitor = PrivateDb.GetUninUser(obj.VisitorId),
                 LastVisitTime = obj.ActionTime,
                 Times = obj.Count 
             }).ToList();
@@ -87,7 +87,7 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         private RecommendUser GetRecommendUser(int userid)
         {
-            var uin = LoveDb.GetUninUser(userid);
+            var uin = PrivateDb.GetUninUser(userid);
             var ruser = new RecommendUser
             {
                 User = uin,
@@ -104,12 +104,12 @@ namespace Upholsterer.Controllers
         /// <returns></returns>
         private string LastStateStr(int userid)
         {
-            var ls = LoveDb.LastOne((State u) => u.UserId == userid);
+            var ls = PrivateDb.LastOne((State u) => u.UserId == userid);
             if (ls != null)
             {
                 return ls.Content;
             }
-            return "我刚来到意中人";
+            return "我刚来到Upholester";
         }
 
         private string GetInfoStr(UninUser user)
@@ -129,7 +129,7 @@ namespace Upholsterer.Controllers
                 sb.Append(user.BaseInfo.MonthlyIncome );
             }
             sb.Append("<br/>");
-            sb.Append(LoveDb.IamgeCount(user.User.UserId) + "张照片 | ");
+            sb.Append(PrivateDb.IamgeCount(user.User.UserId) + "张照片 | ");
             sb.Append("资料完整度" + GetPersent(user.User.UserId)*100 + "%");
             sb.Append("<br/>");
             sb.Append(LastLoginstr(user.User.UserId));

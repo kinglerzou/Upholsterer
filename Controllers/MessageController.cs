@@ -17,7 +17,7 @@ namespace Upholsterer.Controllers
         public JsonResult MakeaHello(int userid)
         {
             var id = CheckValid();
-            if (LoveDb.One((Hello n) => n.ToUserId == userid && n.UserId == id) != null)
+            if (PrivateDb.One((Hello n) => n.ToUserId == userid && n.UserId == id) != null)
             {
                 return Json(0);
             }
@@ -28,10 +28,10 @@ namespace Upholsterer.Controllers
                 ToUserId = userid,
                 UserId = id
             };
-            LoveDb.Add(h);
+            PrivateDb.Add(h);
             //转化为消息 
             var name = GetUserNameById(id);
-            LoveDb.Add(new Message
+            PrivateDb.Add(new Message
             {
                 ActionTime = h.ActionTime,
                 Content = "觉得你很赞,给你打了个招呼.",
@@ -44,7 +44,7 @@ namespace Upholsterer.Controllers
                 StateId = 0
             });
             // 用户热度加1 被赞的用户的
-            LoveDb.HelloCountAdd(userid);
+            PrivateDb.HelloCountAdd(userid);
 
             return Json(1);
         }
@@ -62,7 +62,7 @@ namespace Upholsterer.Controllers
             var stype = (StateType)statetype;
             var id = CheckValid();
             
-            var pr = LoveDb.One((Praise p) => p.UserId == id && p.ToUserId == userid && p.StateType == stype && p.StateId == stateid);
+            var pr = PrivateDb.One((Praise p) => p.UserId == id && p.ToUserId == userid && p.StateType == stype && p.StateId == stateid);
             if (pr != null)
             {
                 return Json(0);//说明已经赞过了
@@ -76,9 +76,9 @@ namespace Upholsterer.Controllers
                 ToUserId = userid,
                 UserId = id
             };
-            LoveDb.Add(praise);
+            PrivateDb.Add(praise);
             // 转化为消息
-            LoveDb.Add(new Message
+            PrivateDb.Add(new Message
             {
                 ActionTime = praise.ActionTime,
                 Content = statetype == 1 || statetype == 0 ? "赞了你发布的状态:" : "赞了你的图片",
@@ -92,10 +92,10 @@ namespace Upholsterer.Controllers
             });
 
             //这条状态或者图片的赞也要加一
-            LoveDb.StateOrImagePraiseCountAdd(stateid, stype);
+            PrivateDb.StateOrImagePraiseCountAdd(stateid, stype);
 
             // 用户热度加1 
-            LoveDb.PraiseCountAdd(userid);
+            PrivateDb.PraiseCountAdd(userid);
 
 
             // 用户热度加1 
@@ -110,7 +110,7 @@ namespace Upholsterer.Controllers
         {
             var id = CheckValid();
             //msgtype=0 表示是私信
-            var msgList = LoveDb.MessageAll().Where(m => (m.ToUserId == id || m.FromUserId == id) && m.MegType == 0).OrderByDescending(n => n.ActionTime).ToList();  
+            var msgList = PrivateDb.MessageAll().Where(m => (m.ToUserId == id || m.FromUserId == id) && m.MegType == 0).OrderByDescending(n => n.ActionTime).ToList();  
             var msgInfoList = new List<MessageInfo>();
             foreach (Message message in msgList)
             {
@@ -126,7 +126,7 @@ namespace Upholsterer.Controllers
                     msgInfo.Message = message.Content;
                     if (message.StateType == StateType.Personal)//评论的状态
                     {
-                        var state = LoveDb.One((State s) => s.Id == message.StateId);
+                        var state = PrivateDb.One((State s) => s.Id == message.StateId);
                         if (state != null)
                         {
                             msgInfo.Message += "<br/><div class='oldmsg'>" + state.Content + "</div>";
@@ -134,7 +134,7 @@ namespace Upholsterer.Controllers
                     }
                     if (message.StateType == StateType.Image)
                     {
-                        var img = LoveDb.One((Iamgbox i) => i.Id == message.StateId);
+                        var img = PrivateDb.One((Iamgbox i) => i.Id == message.StateId);
                         if (img != null)
                         {
                             msgInfo.Message += "<br/><div class='oldmsg'><div class='imgtigger'><img src='" + img.ImgUrl + "' /></div></div>";
@@ -145,7 +145,7 @@ namespace Upholsterer.Controllers
 
                     if (message.FromUserId == id)//说明发送者是本人，此时显示 接收者的图片和信息
                     {
-                        biguser = LoveDb.GetUninUser(message.ToUserId);
+                        biguser = PrivateDb.GetUninUser(message.ToUserId);
                         msgInfo.UserId = message.ToUserId;
                         msgInfo.UserName = GetUserNameById(message.ToUserId);
                         msgInfo.Tag = "发给:";
@@ -153,7 +153,7 @@ namespace Upholsterer.Controllers
                     }
                     else//说明别人给我发送
                     {
-                        biguser = LoveDb.GetUninUser(message.FromUserId);
+                        biguser = PrivateDb.GetUninUser(message.FromUserId);
                         msgInfo.UserId = message.FromUserId;
                         msgInfo.UserName = message.FromUserName;
                         msgInfo.Tag = "";
@@ -177,17 +177,17 @@ namespace Upholsterer.Controllers
         {
             var uid = CheckValid();
             ViewBag.myid = uid;
-            ViewBag.ImgUrl = LoveDb.One((User u) => u.UserId == uid).ImgUrl;//自己的图片
+            ViewBag.ImgUrl = PrivateDb.One((User u) => u.UserId == uid).ImgUrl;//自己的图片
             List<Message> msg;
             if (fid != null)
             {
                 ViewBag.name = GetUserNameById((int)fid);
-                var user = LoveDb.One((User u) => u.UserId == fid);
+                var user = PrivateDb.One((User u) => u.UserId == fid);
                 ViewBag.OtherImgUrl = user.ImgUrl;//她人的图片
                 ViewBag.OtherId = user.UserId;
                 ViewBag.Sex = user.Sex == "man" ? "他" : "她";
                 //我发给他的和他发给我的都显示出来
-                msg = LoveDb.MessageAll().Where(m => m.MegType == MegType.Private && ((m.ToUserId == fid && m.FromUserId == uid) ||
+                msg = PrivateDb.MessageAll().Where(m => m.MegType == MegType.Private && ((m.ToUserId == fid && m.FromUserId == uid) ||
                     (m.ToUserId == uid && m.FromUserId == fid))).OrderByDescending(n => n.ActionTime).ToList();
             }
             else
@@ -196,12 +196,12 @@ namespace Upholsterer.Controllers
                 ViewBag.Sex = "Ta";
                 ViewBag.OtherId = 0;
                 ViewBag.OtherImgUrl = "../../Content/Photos/bkq.jpg";//她人的图片
-                msg = LoveDb.MessageAll().Where(n => n.MegType == MegType.System && n.ToUserId == uid).OrderByDescending(n => n.ActionTime).ToList();
+                msg = PrivateDb.MessageAll().Where(n => n.MegType == MegType.System && n.ToUserId == uid).OrderByDescending(n => n.ActionTime).ToList();
             }
             //设置已读信息
             foreach (var message in msg.Where(n => n.ToUserId == uid && n.IsReaded == false).ToList())
             {
-                LoveDb.ReadMessage<Message>(message.Id);
+                PrivateDb.ReadMessage<Message>(message.Id);
             }
 
             //找到对于我而言，处理引用
@@ -209,7 +209,7 @@ namespace Upholsterer.Controllers
             {
                 if (message.StateType == StateType.Personal)//评论的状态
                 {
-                    var state = LoveDb.One((State s) => s.Id == message.StateId);
+                    var state = PrivateDb.One((State s) => s.Id == message.StateId);
                     if (state != null)
                     {
                         message.Content += string.Format("<br/><div class='oldmsg' data-userid='{0}'>{1}</div>",message.FromUserId, state.Content);
@@ -217,7 +217,7 @@ namespace Upholsterer.Controllers
                 }
                 if (message.StateType == StateType.Image)
                 {
-                    var img = LoveDb.One((Iamgbox i) => i.Id == message.StateId);
+                    var img = PrivateDb.One((Iamgbox i) => i.Id == message.StateId);
                     if (img != null)
                     {
                         message.Content += string.Format("<br/><div class='oldmsg' data-userid='{0}'>{1}</div>", message.FromUserId, img.ImgUrl);
@@ -280,7 +280,7 @@ namespace Upholsterer.Controllers
                 };
             }
 
-            LoveDb.Add(msg);
+            PrivateDb.Add(msg);
             return Json(msg);
         }
 
@@ -288,7 +288,7 @@ namespace Upholsterer.Controllers
         {
             if (id > 0)
             {
-                LoveDb.Delete<Message>(id);
+                PrivateDb.Delete<Message>(id);
                 return 1;
             }
             return 0;

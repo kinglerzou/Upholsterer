@@ -89,7 +89,7 @@ namespace Upholsterer.Models
     }
 
     /// <summary>
-    /// 择偶需求
+    /// 交友需求
     /// </summary>
     public class RequirementClone
     {
@@ -186,79 +186,6 @@ namespace Upholsterer.Models
         public string DouBan { get; set; }
     }
 
-    public class LoveView
-    {
-        public int Id { get; set; }
-
-        public int UserId { get; set; }
-
-        /// <summary>
-        /// 工作时间安排
-        /// </summary>
-        [MaxLength(30)]
-        [Display(Name = "工作时间安排")]
-        public string WorkTimePlan { get; set; }
-
-        /// <summary>
-        /// 是否吸烟
-        /// </summary>
-        [MaxLength(30)]
-        [Display(Name = "是否吸烟")]
-        public string Smoking { get; set; }
-
-        /// <summary>
-        /// 是否喝酒
-        /// </summary>
-        [MaxLength(30)]
-        [Display(Name = "是否喝酒")]
-        public string Drinking { get; set; }
-
-        /// <summary>
-        /// 恋爱多久结婚
-        /// </summary>
-        [MaxLength(30)]
-        [Display(Name = "恋爱多久结婚")]
-        public string LoveDuration { get; set; }
-
-        /// <summary>
-        /// 婚后是否要孩子
-        /// </summary>
-        [MaxLength(30)]
-        [Display(Name = "婚后是否要孩子")]
-        public string WantaBaby { get; set; }
-
-        /// <summary>
-        /// 婚后是否介意与父母同住
-        /// </summary>
-        [MaxLength(30)]
-        [Display(Name = "婚后是否介意与父母同住")]
-        public string ParentLiveTogether { get; set; }
-
-        /// <summary>
-        /// 家庭中的家务应该由谁来承担
-        /// </summary>
-        [MaxLength(30)]
-        [Display(Name = "家庭中的家务应该由谁来承担")]
-        public string Housework { get; set; }
-
-        /// <summary>
-        /// 婚后家庭理财方面，我更倾向于
-        /// </summary>
-        [MaxLength(30)]
-        [Display(Name = "婚后家庭理财方面，我更倾向于")]
-        public string ManageMoney { get; set; }
-
-        /// <summary>
-        /// 厨艺如何？对对方的厨艺有无要求
-        /// </summary>
-        [MaxLength(30)]
-        [Display(Name = "厨艺如何？对对方的厨艺有无要求")]
-        public string Cooking { get; set; }
-
-        [MaxLength(30)]
-        [Display(Name = "是否接受异地恋")]
-        public string Allopatry { get; set; }
-    }
 
     public class Item  
     {

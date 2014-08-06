@@ -5,21 +5,105 @@
 }
 <link href="../../Content/CSS/topicnav.css" rel="stylesheet" />
 <style>
-    .topic{font-size: small;overflow: auto;clear: both;height: auto;min-height: 200px;} 
-    .imgtopic{width: 80px;height: 80px;float: left;color: gray} 
-    .imgtopic img{max-height: 80px;max-width: 80px}
-    .topicontent{float: left;width:80%;margin-left: 10px; }
-    .subtime{color: green;float: right;margin-right: 20px;}
-    .topfoot #enjoy{float: right;color: gray;margin-right: 20px;font-size: small;cursor: pointer;padding: 5px;border-radius: 4px;background-color: #fff0f5;border: 1px solid white}
-    .topfoot #enjoy:hover{background-color: #fff0f5;border-color:#ffc0cb} 
-    .topfoot #enjoy i{font-size:20px;vertical-align: bottom;color: #999;font-family: Arial}
-    .topfoot{ clear: both;overflow: auto;height: 25px;padding: 5px;height: auto ; }
-    .topfoot #enjoy:hover>i{color:#ff00ff}    
-      .content img{max-height: 300px;max-width:500px;}    
-     #enjoycount{float: right;vertical-align: bottom;padding: 10px;}     #enjoycount a{padding: 0 5px;}    
-     #enjoycount a:hover{cursor: pointer;background-color: gainsboro}             
-     .report{float: right;padding: 10px;color: gray;display: none;}   
-     .topicontent:hover .report{display: inline;cursor: pointer;}                                                               
+    .topic {
+        font-size: small;
+        overflow: auto;
+        clear: both;
+        height: auto;
+        min-height: 200px;
+    }
+
+    .imgtopic {
+        width: 80px;
+        height: 80px;
+        float: left;
+        color: gray;
+    }
+
+        .imgtopic img {
+            max-height: 80px;
+            max-width: 80px;
+        }
+
+    .topicontent {
+        float: left;
+        width: 80%;
+        margin-left: 10px;
+    }
+
+    .subtime {
+        color: green;
+        float: right;
+        margin-right: 20px;
+    }
+
+    .topfoot #enjoy {
+        float: right;
+        color: gray;
+        margin-right: 20px;
+        font-size: small;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 4px;
+        background-color: #fff0f5;
+        border: 1px solid white;
+    }
+
+        .topfoot #enjoy:hover {
+            background-color: #fff0f5;
+            border-color: #ffc0cb;
+        }
+
+        .topfoot #enjoy i {
+            font-size: 20px;
+            vertical-align: bottom;
+            color: #999;
+            font-family: Arial;
+        }
+
+    .topfoot {
+        clear: both;
+        overflow: auto;
+        height: 25px;
+        padding: 5px;
+        height: auto;
+    }
+
+        .topfoot #enjoy:hover > i {
+            color: #ff00ff;
+        }
+
+    .content img {
+        max-height: 300px;
+        max-width: 500px;
+    }
+
+    #enjoycount {
+        float: right;
+        vertical-align: bottom;
+        padding: 10px;
+    }
+
+        #enjoycount a {
+            padding: 0 5px;
+        }
+
+            #enjoycount a:hover {
+                cursor: pointer;
+                background-color: gainsboro;
+            }
+
+    .report {
+        float: right;
+        padding: 10px;
+        color: gray;
+        display: none;
+    }
+
+    .topicontent:hover .report {
+        display: inline;
+        cursor: pointer;
+    }                                                               
 </style>
 <script>
     $(function () {

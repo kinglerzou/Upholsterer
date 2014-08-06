@@ -10,7 +10,7 @@ namespace Upholsterer.Models
     {
         public int Id { get; set; }
         public int FromUserId { get; set; }
-        [MaxLength(10)]
+        [MaxLength(20)]
         public string FromUserName { get; set; }
 
         //[MaxLength(200)]

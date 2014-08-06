@@ -7,13 +7,24 @@
     })
 </script>
 <style>
-    #myCarousel {
-        width: 100%;
-    }
-
-        #myCarousel img {
-            width: 100%;
+    .items{}
+     div.loader {
+            font-style: italic;
+            text-align: center;
+            margin: 20px;
+            height: 24px;
+            background: url(../../Content/Photos/loading.gif) no-repeat center center;
+           
         }
+     div ins{background-color: gainsboro;margin-top: 5px;text-align:center}
+</style>
+<script>
+    $(function () {
+        $("#myCarousel").carousel();
+    })
+</script>
+<style>
+    #myCarousel{width: 100%; } #myCarousel img{width: 100%;}
 </style>
 <div id="myCarousel" class="carousel slide">
                 <ol class="carousel-indicators">

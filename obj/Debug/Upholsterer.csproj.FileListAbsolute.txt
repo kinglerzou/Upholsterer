@@ -1,9 +1,4 @@
-F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\Findlover.dll
-F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\Findlover.pdb
-F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\EntityFramework.dll
-F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\Kendo.Mvc.dll
 F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\Microsoft.Web.Infrastructure.dll
-F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\NLog.dll
 F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\System.Web.Helpers.dll
 F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\System.Web.Mvc.dll
 F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\System.Web.Providers.dll
@@ -29,5 +24,10 @@ F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\zh-Hans\System.Web.WebPages.re
 F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\zh-Hans\System.Web.WebPages.Deployment.resources.dll
 F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\zh-Hans\System.Web.WebPages.Razor.resources.dll
 F:\WebSit\Upholsterer\Upholsterer\Upholsterer\obj\Debug\Upholsterer.csprojResolveAssemblyReference.cache
-F:\WebSit\Upholsterer\Upholsterer\Upholsterer\obj\Debug\Findlover.dll
-F:\WebSit\Upholsterer\Upholsterer\Upholsterer\obj\Debug\Findlover.pdb
+F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\EntityFramework.dll
+F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\Kendo.Mvc.dll
+F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\NLog.dll
+F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\Upholsterer.dll
+F:\WebSit\Upholsterer\Upholsterer\Upholsterer\bin\Upholsterer.pdb
+F:\WebSit\Upholsterer\Upholsterer\Upholsterer\obj\Debug\Upholsterer.dll
+F:\WebSit\Upholsterer\Upholsterer\Upholsterer\obj\Debug\Upholsterer.pdb

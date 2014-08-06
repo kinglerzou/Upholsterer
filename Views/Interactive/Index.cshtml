@@ -2,6 +2,29 @@
     ViewBag.Title = "Topic";
 }
 <link href="../../Content/CSS/topicnav.css" rel="stylesheet" />
+<script type="text/javascript">
+    $(function () {
+        $("#mianNav>li").eq(4).addClass("active");
+    })
+    function enterserch()
+    {
+        var value = $(".search-query").val().trim();
+        var event = window.event;
+        if (event.keyCode == 13)
+        {
+            if(value=="")
+            {
+                alert("输入title关键字！");
+                return false;           
+            }
+            $.post("/Interactive/EnterSearch", { keyword: value }, function (data) {
+                var s =eval(data);
+                alert(s);
+            })
+        }
+
+    }
+</script>
 @Html.Action("TopicNav")
 <div class="mianbody">
     <div class="topleft">

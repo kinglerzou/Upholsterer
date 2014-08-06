@@ -23,7 +23,6 @@
             $("#Provience").val(data.NativePlace);
             $("#Provience").change();
             $("#City").val(data.NativeCity);
-
             $("#Car").val(data.Car);
             $("#Housing").val(data.Housing);
             $("#Weight").val(data.Weight);
@@ -33,23 +32,7 @@
             $("#DouBan").val(data.DouBan);
             $("#MicroBlog").val(data.MicroBlog);
         });
-    }
-    function getLoveViewJson() {
-        $.post("/User/GetLoveView", function (data) {
-           
-            $("#WantaBaby").val(data.WantaBaby);
-            $("#WorkTimePlan").val(data.WorkTimePlan);
-            $("#Smoking").val(data.Smoking);
-            $("#Drinking").val(data.Drinking);
-            $("#LoveDuration").val(data.LoveDuration);
-            $("#ParentLiveTogether").val(data.ParentLiveTogether);
-            $("#Housework").val(data.Housework);
-            $("#ManageMoney").val(data.ManageMoney);
-            $("#Cooking").val(data.Cooking);
-            $("#Allopatry").val(data.Allopatry);
-        });
-    }
-    
+    } 
     function getRequirementJson() {
         $.post("/User/GetRequirement", function (data) {
             requirement = data;
@@ -79,7 +62,6 @@
             initRequirement(data);
         });
     }
-    getLoveViewJson();
     getDetailInfoJson();
     getBaseInfoJson();
     getRequirementJson();
@@ -89,7 +71,7 @@
     function getPersent() {
         $.get("/User/GetPersent", function (data) {
             if (data < 0.3) {
-                $("#pinfo").html("资料完整度：不够30%,交互受影响哦");
+                $("#pinfo").html("资料完整度：不够30%,补全资料哦！");
             }
             if (data >= 0.3 && data < 0.6) {
                 $("#pinfo").html("资料完整度：还不错");
@@ -186,27 +168,6 @@
     '畲族', '僳僳族', '仡佬族', '东乡族', '水族', '佤族', '羌族', '仫佬族'];
     var pros = ['请选择', '北京', '上海', '天津', '重庆', '黑龙江', '吉林', '山东', '山西', '陕西', '河北', '河南', '湖北', '湖南', '海南', '江苏', '江西', '广东', '广西', '云南', '贵州',
         '四川', '内蒙古', '宁夏', '甘肃', '青海', '安徽', '浙江', '福建', '西藏', '新疆', '台湾', '香港', '澳门'];
-    var works = ['请选择', "工作时间固定,不接受对方出差", "工作时间固定,不介意对方出差", "工作经常出差","工作偶尔出差"];
-    var somks = ['请选择',"不吸烟,而且反感吸烟","不吸烟,但也不介意","偶尔吸烟","经常吸烟"];
-    var dinks = ['请选择',"不喝酒,且很反感喝酒","不喝酒,但也不介意","偶尔社交需要才喝酒","经常喝酒"];
-    var duras = ['请选择',"能接受闪婚","一年内","两年内","三年以上","赶紧带我走吧"];
-    var babys = ['请选择',"想要孩子","不想要孩子","造人需要夫妻共同计划"];
-    var hosws = ['请选择', '是妻子的事情', '平均分配', '谁有时间谁做', '各自承担自己擅长的部分'];
-    var monys = ['请选择', '由妻子打理', '由丈夫打理', '夫妻共同计划', '各自支配各自收入'];
-    var cooks = ['请选择', '会做饭,希望对方也会', '会做饭,对另一半没要求', '不太会,对另一半没要求', '不太会,希望对方厨艺比我好'];
-    var lives = ['请选择', '不介意', '介意'];
-    var allrs = ['请选择','不接受','接受','接受,但必须要先在一起过'];
-
-    initSelete($("#WorkTimePlan"),works);
-    initSelete($("#Smoking"),somks);
-    initSelete($("#Drinking"),dinks);
-    initSelete($("#LoveDuration"),duras);
-    initSelete($("#WantaBaby"),babys);
-    initSelete($("#Housework"),hosws);
-    initSelete($("#ManageMoney"),monys);
-    initSelete($("#Cooking"),cooks );
-    initSelete($("#ParentLiveTogether"),lives);
-    initSelete($("#Allopatry"),allrs);
     initSelete($("#Provience"), pros);
     initSelete($("#NowProvience"), pros);
     initSelete($("#ResidenceProvince"), pros);
@@ -455,7 +416,7 @@
             $sbox.find("span:eq(1)").html(x);
         }
         //身高问题
-        if (data.HightLl == 0) {//说明没有身高条件 直接隐藏这句话
+        if (data.HightLl == 0) {
             $sbox.find("span:eq(2)").hide();
         } else {
             spans.eq(4).html(data.HightLl);
@@ -592,7 +553,6 @@
             });
         } else {
             if (str == 0) {
-                //别忘输入内容哦
                 $("#textempty").show().html("别忘输入内容哦");
                 var terro = setTimeout(function() {
                     $("#textempty").fadeOut();
@@ -611,10 +571,7 @@
         beforeSend: function () {
         }
     };
-    var optionloves = {
-        dataType: 'json',
-        success: processJson3,
-    };
+
     
     var optionrequirement = {
         dataType: 'json',
@@ -629,10 +586,6 @@
         $(this).ajaxSubmit(optiondetails);
         return false;
     });
-    $('#Form3').submit(function () {
-        $(this).ajaxSubmit(optionloves);
-        return false;
-    });
     $("#FormRequirement").submit(function() {
         $(this).ajaxSubmit(optionrequirement);
         return false;
@@ -645,27 +598,7 @@
         $(".sbox:eq(0)").show();
     }
 
-    //恋爱观
-    function processJson3(data) {
-        $(".sbox").eq(2).show();
-        $(".eidtbox").eq(2).hide();
-        getLoveViewJson();
-        getPersent();
-        var spans = $(".sbox:eq(2) .ulright");
-        spans.eq(0).html(data.WorkTimePlan);
-        spans.eq(1).html(data.Smoking);
-        spans.eq(2).html(data.Drinking);
-        spans.eq(3).html(data.LoveDuration);
-        spans.eq(4).html(data.WantaBaby);
-        spans.eq(5).html(data.ParentLiveTogether);
-        spans.eq(6).html(data.Housework);
-        spans.eq(7).html(data.ManageMoney);
-        spans.eq(8).html(data.Cooking);
-        spans.eq(9).html(data.Allopatry);
-        iniempty(spans);
-        $(".selecttitle:eq(2) span").show();
-        $(".selecttitle:eq(2) a").hide();
-    }
+
 
     //详细资料
     function processJson2(data) {
@@ -705,8 +638,7 @@
         $("#sState").html(data.State);
     }
 
-    //不是本人，隐藏编辑， 出现喜欢和私信。  要考虑加入 黑名单和检举的功能
-    
+    //不是本人，隐藏编辑， 出现喜欢和私信。  要考虑加入 黑名单和检举的功能    
     if ($("#whovisit").val() != "Self") {
         //隐藏图片和资料编辑
         $("#modifyimg,.eidt,.saytitle>span,.selecttitle span").hide();

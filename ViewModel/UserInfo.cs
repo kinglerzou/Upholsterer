@@ -15,7 +15,6 @@ namespace Upholsterer.ViewModel
         public string UserName { get; set; }
         public string ImgUrl { get; set; }
         public BaseInfo BaseInfo { get; set; }
-        public LoveView LoveView { get; set; }
         public DetailInfo DetailInfo { get; set; }
         public Requirement Requirement { get; set; }
         public string LastState { get; set; }// 最后一条状态
@@ -26,7 +25,6 @@ namespace Upholsterer.ViewModel
     {
         public List<User> UncheckedUsers { get; set; }//管理用户
         public Admin Admin { get; set; }//操作者本人
-        //............. 其它问题   
     }
 
     public class Admin

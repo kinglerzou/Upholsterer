@@ -7,7 +7,7 @@
 <script src="../../Content/JS/userindex.js"></script>
  <script type="text/javascript">
      $(function () {
-         $("#mianNav>li").eq(4).addClass("active");
+         $("#mianNav>li").eq(3).addClass("active");
          $.post("/Base/GetPraiseOrHelloList", { type: 0 }, function (data) {
              $(".hi").each(function (n) {
                  var id = $(this).attr("data-userid");
@@ -167,7 +167,6 @@
                         <td>行业:</td>
                         <td>
                             <select name="Vocation" id="Vocation" style="width:90px"></select>
-                            @*<input type="text" id="Profession" readonly="readonly" name="Profession" value="生产/工艺/制造">*@</td>
                     </tr>
                     <tr>
                         <td>当前状态:</td>
@@ -187,7 +186,7 @@
      <div class="row-fluid " style="margin:0;padding: 0;">
       <div class="span9">
        <div class="dubai">
-           <div class="saytitle">内心独白 <span title="编辑"><i class="icon-pencil icon-white"></i></span><a href="javascript:;">取消编辑</a></div>
+           <div class="saytitle">即时状态 <span title="编辑"><i class="icon-pencil icon-white"></i></span><a href="javascript:;">取消编辑</a></div>
            <div class="saying">@Model.LastState</div>
            <div class="say">
                <textarea id="saywhat" style=" width: 100%;height: 70px; "></textarea>
@@ -205,7 +204,7 @@
                <div id="statebox" data-userid="@Model.UserId"></div>
             </div>
             <div class="tab-pane active" id="infos">
-                <div class="selecttitle">择偶要求<span title="编辑"><i class="icon-pencil icon-white"></i></span><a href="javascript:;">取消编辑</a></div>
+                <div class="selecttitle">朋友筛选<span title="编辑"><i class="icon-pencil icon-white"></i></span><a href="javascript:;">取消编辑</a></div>
                 <div class="sbox" style="text-indent: 30px;">
                     我希望你<span>生活在 <strong></strong><strong></strong>，</span>
                         <span>年龄为 <strong></strong><strong id="ageul"> </strong>岁之间就好啦，</span>
@@ -236,7 +235,6 @@
                         <li><span class="ulleft">购车情况：</span><span class="ulright">@Model.DetailInfo.Car</span></li>
                         <li><span class="ulleft">体重：</span><span class="ulright">@Model.DetailInfo.Weight</span></li>
                         <li><span class="ulleft">民族：</span><span class="ulright">@Model.DetailInfo.People</span></li>
-                        @*<li><span class="ulleft">籍贯：</span><span class="ulright">@Model.DetailInfo.NativePlace @Model.DetailInfo.NativeCity </span></li>*@
                         <li><span class="ulleft">星座：</span><span class="ulright">@Model.DetailInfo.Constellation</span></li>
                         <li><span class="ulleft">血型：</span><span class="ulright">@Model.DetailInfo.BloodType</span></li>
                         <li><span class="ulleft">微博地址：</span><span class="ulright">@Model.DetailInfo.MicroBlog</span></li>
@@ -260,48 +258,6 @@
                             <li><span class="ulleft"> </span><span class="ulright " ><input type="submit" style="margin-top: 5px" value="保存" class="btn btn-info"/></span></li>
                         </ul>
                        
-                    }
-                    <script>
-                    //var patrn = /^(http:\/\/|https:\/\/)/;
-                        //if (!patrn.exec('https://w3w.163.com')) {
-                        //    alert('false');
-                        //} else {
-                        //    alert('true');
-                        //}
-                        </script>
-                </div>
-
-                <div class="selecttitle">生活婚恋观<span title="编辑"><i class="icon-pencil icon-white"></i></span><a href="javascript:;">取消编辑</a></div>
-                <div class="sbox">
-                     <ul>
-                        <li><span class="ulleft longer ">工作时间安排：</span><span class="ulright ">@Model.LoveView.WorkTimePlan</span></li>
-                        <li><span class="ulleft longer">是否吸烟：</span><span class="ulright ">@Model.LoveView.Smoking</span></li>
-                        <li><span class="ulleft longer">是否喝酒：</span><span class="ulright ">@Model.LoveView.Drinking</span></li>
-                        <li><span class="ulleft longer">恋爱多久结婚：</span><span class="ulright ">@Model.LoveView.LoveDuration</span></li>
-                        <li><span class="ulleft longer">婚后是否要孩子：</span><span class="ulright ">@Model.LoveView.WantaBaby</span></li>
-                        <li><span class="ulleft longer">婚后是否介意与父母同住：</span><span class="ulright ">@Model.LoveView.ParentLiveTogether</span></li>
-                        <li><span class="ulleft longer">家庭中的家务应该由谁来承担：</span><span class="ulright ">@Model.LoveView.Housework</span></li>
-                        <li><span class="ulleft longer">婚后家庭理财方面，我更倾向于：</span><span class="ulright ">@Model.LoveView.ManageMoney</span></li>
-                        <li><span class="ulleft longer">厨艺如何？对对方的厨艺有无要求：</span><span class="ulright ">@Model.LoveView.Cooking</span></li>
-                        <li><span class="ulleft longer">是否接受异地恋：</span><span class="ulright">@Model.LoveView.Allopatry</span></li>
-                    </ul>
-                </div>
-                <div class="eidtbox">
-                      @using (Html.BeginForm("UpdateLoveView", "User", FormMethod.Post, new { name = "Form3", id = "Form3" }))
-                    {
-                        <ul>
-                            <li><span class="ulleft longer ">工作时间安排：</span><span class="ulright "><select name="WorkTimePlan" id="WorkTimePlan"></select></span></li>
-                            <li><span class="ulleft longer">是否吸烟：</span><span class="ulright "><select name="Smoking" id="Smoking"></select></span></li>
-                            <li><span class="ulleft longer">是否喝酒：</span><span class="ulright "><select  name="Drinking" id="Drinking" ></select></span></li>
-                            <li><span class="ulleft longer">恋爱多久结婚：</span><span class="ulright "><select name="LoveDuration" id="LoveDuration"></select></span></li>
-                            <li><span class="ulleft longer">婚后是否要孩子：</span><span class="ulright "><select id="WantaBaby" name="WantaBaby"></select></span></li>
-                            <li><span class="ulleft longer">婚后是否介意与父母同住：</span><span class="ulright "><select name="ParentLiveTogether" id="ParentLiveTogether"></select></span></li>
-                            <li><span class="ulleft longer">家庭中的家务应该由谁来承担：</span><span class="ulright "><select name="Housework" id="Housework"></select></span></li>
-                            <li><span class="ulleft longer">婚后家庭理财方面，我更倾向于：</span><span class="ulright "><select name="ManageMoney" id="ManageMoney"></select> </span></li>
-                            <li><span class="ulleft longer">厨艺如何？对对方的厨艺有无要求：</span><span class="ulright "><select name="Cooking" id="Cooking"></select>  </span></li>
-                            <li><span class="ulleft longer">是否接受异地恋：</span><span class="ulright"><select name="Allopatry" id="Allopatry"></select></span> </li>
-                            <li><span class="ulleft longer"> </span><span class="ulright " ><input type="submit" style="margin-top: 5px" value="保存" class="btn btn-info"/></span></li>
-                       </ul>
                     }
                 </div>
             
