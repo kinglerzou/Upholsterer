@@ -11,6 +11,7 @@ namespace Upholsterer.Migrations
     {
         public Configuration()
         {
+            //当数据库发生改变时，启用这些参数能自动从新生成实体
             AutomaticMigrationsEnabled = true;
             AutomaticMigrationDataLossAllowed = true;    
         }
