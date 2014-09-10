@@ -26,7 +26,7 @@ namespace Upholsterer.Models
         #region  常规方法 Add Delete All One  Ones LastOne
 
         #region Add
-        
+        //泛型传实体参数t.GetType().Name获取实体名字
         public void Add<T>(T t)
         {
             using(var PrivateDb = new PrivateDb())
