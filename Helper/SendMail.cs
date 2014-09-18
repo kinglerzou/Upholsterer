@@ -11,7 +11,7 @@ namespace Upholsterer.Helper
             const string server = "stmp.qq.com"; //此处代表Mail Server地址
             const string formEmail = "283827940@qq.com"; //此处代表系统发邮件的时候的发件人地址
             const string formDispayName = "茶道文化"; //系统发件人的显示名称
-            const string formPassword = "ZOUjian123."; //此处代表系统发邮件的时候的发件人的密码
+            const string formPassword = "..."; //此处代表系统发邮件的时候的发件人的密码
             const string formDomain = "domain.mail.qq.com"; //域名
             #endregion
 
